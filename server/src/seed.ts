@@ -1,0 +1,7 @@
+import { createDatabase, tashkentToday } from './db/database.js';
+const db=createDatabase(); db.exec('DELETE FROM payments; DELETE FROM students;');
+const today=tashkentToday(), [y,m]=today.slice(0,7).split('-').map(Number); const prev=new Date(Date.UTC(y,m-2,1)).toISOString().slice(0,7);
+const students=[['Ali Valiyev','+998901112233','Frontend',1200000],['Madina Karimova','+998911234567','Frontend',1200000],['Sardor Tursunov','+998931234567','Backend',1500000],['Dilnoza Usmonova','+998941234567','Backend',1500000],['Jasur Aliyev','+998951234567','IELTS',900000],['Nodira Xasanova','+998971234567','IELTS',900000],['Bekzod Rasulov','+998991234567','Matematika',700000],['Sevara Qodirova','+998881234567','Matematika',700000],['Kamron Soliyev','+998901234568','Frontend',1200000]];
+const insert=db.prepare('INSERT INTO students(name,phone,group_name,monthly_fee,created_at) VALUES(?,?,?,?,?)'); const ids=students.map(x=>Number(insert.run(...x,today).lastInsertRowid)); const pay=db.prepare('INSERT INTO payments(student_id,amount,paid_at,created_at) VALUES(?,?,?,?)');
+pay.run(ids[0],1200000,`${today.slice(0,7)}-02`,today);pay.run(ids[1],500000,`${today.slice(0,7)}-05`,today);pay.run(ids[2],1600000,`${today.slice(0,7)}-03`,today);pay.run(ids[4],300000,`${today.slice(0,7)}-01`,today);pay.run(ids[4],200000,`${today.slice(0,7)}-15`,today);pay.run(ids[6],700000,`${prev}-20`,today);
+console.log(`Seeded ${ids.length} students for ${today.slice(0,7)}.`);
